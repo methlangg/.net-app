@@ -45,24 +45,31 @@ class NotDefteri
         }
     }
 
-    static void NotlariGoruntule()
+   static void NotlariGoruntule()
+{
+    if (!File.Exists(NotDefteriYolu))
     {
-        if (!File.Exists(NotDefteriYolu))
-        {
-            Console.WriteLine("Not defterinde henüz hiç not yok.");
-            return;
-        }
-
-        Console.WriteLine("Notlar:\n");
-
-        string[] notlar = File.ReadAllLines(NotDefteriYolu);
-        notlar = notlar.OrderBy(not => DateTime.Parse(not.Split(':')[0])).ToArray();
-
-        for (int i = 0; i < notlar.Length; i++)
-        {
-            Console.WriteLine($"{i + 1}. {notlar[i]}");
-        }
+        Console.WriteLine("Not defterinde henüz hiç not yok.");
+        return;
     }
+
+    Console.WriteLine("Notlar:\n");
+
+    string[] notlar = File.ReadAllLines(NotDefteriYolu);
+
+    // Tarih ve saat formatı
+    string format = "yyyy-MM-dd HH:mm:ss";
+
+    // Tarihi ve saati ayrıştırırken kullanılacak DateTimeStyles belirtilmedi.
+    // Belirtilmemesi durumunda varsayılan olarak None kullanılacaktır.
+    // Farklı bir tercih için belirtilebilir.
+    notlar = notlar.OrderBy(not => DateTime.TryParseExact(not.Split(':')[0], format, null, System.Globalization.DateTimeStyles.None, out DateTime result) ? result : DateTime.MinValue).ToArray();
+
+    for (int i = 0; i < notlar.Length; i++)
+    {
+        Console.WriteLine($"{i + 1}. {notlar[i]}");
+    }
+}
 
     static void NotEkle()
     {
